@@ -16,11 +16,13 @@ public final class DetailModel implements IDetailModel {
         this.mDBHelper = db;
     }
 
+    public static final String ERROR_MESSAGE = "No such a recording in DB!!!";
+
     @Override
     public void deleteRecordDB( @NonNull Integer id,  @NonNull IDetailOnCompleteModel iDetailOnCompleteModel){
 
         Integer isDeleted = mDBHelper.deleteUserJourney(id);
-        Log.e( "isDeleted", String.valueOf( isDeleted ));
+
             iDetailOnCompleteModel.showSuccessfullDeletion( String.valueOf( isDeleted ) );
     }
 
@@ -34,6 +36,6 @@ public final class DetailModel implements IDetailModel {
         if(userLocations != null)
             iDetailOnCompleteModel.getDetailedRecord(userLocations);
         else
-            iDetailOnCompleteModel.showError( "No such a recording in DB!!!");
+            iDetailOnCompleteModel.showError( ERROR_MESSAGE );
     }
 }

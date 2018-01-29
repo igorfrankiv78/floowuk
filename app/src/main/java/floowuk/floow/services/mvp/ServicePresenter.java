@@ -18,6 +18,9 @@ public class ServicePresenter implements IServicePresenter, IServiceOnCompleteMo
     private String mTime;
     private List<UserLocation> mListOfUserLocations;
 
+    public static final String STATE_OF_RECORDDING_YES = "YES";
+    public static final String STATE_OF_RECORDDING_NO = "NO";
+
     public ServicePresenter ( IServiceView iServiceView, Context context)
     {
         this.mIServiceView = iServiceView;
@@ -42,7 +45,7 @@ public class ServicePresenter implements IServicePresenter, IServiceOnCompleteMo
             mListOfUserLocations = listOfUserLocations;
 
         mListOfUserLocations.add( new UserLocation(  mLatitude, mLongitude, mTime ) );
-        this.mServiceModell.writeIOData(mListOfUserLocations, this, "YES");
+        this.mServiceModell.writeIOData(mListOfUserLocations, this, STATE_OF_RECORDDING_YES );
     }
     // Presenter Third Method to be triggered
     @Override
@@ -58,7 +61,7 @@ public class ServicePresenter implements IServicePresenter, IServiceOnCompleteMo
     @Override
     public void writeIOdata(  ){
         if(mListOfUserLocations != null && mListOfUserLocations.size() > 0 ) {
-            this.mServiceModell.writeIOData(mListOfUserLocations, this, "NO");
+            this.mServiceModell.writeIOData(mListOfUserLocations, this, STATE_OF_RECORDDING_NO );
         }
     }
 

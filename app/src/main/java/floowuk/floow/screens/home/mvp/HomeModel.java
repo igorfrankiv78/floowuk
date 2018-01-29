@@ -13,6 +13,10 @@ public final class HomeModel implements IHomeModel {
 
     private final DBHelper mDBHelper;
 
+    public static final String ERROR_MESSAGE_1 = "No recordings!!! Please, record a journey!";
+    public static final String ERROR_MESSAGE_2 = "Could not save your current journey!";
+    public static final String SUCCESS_MESSAGE_2 = "Your journey has been successfully safed!";
+
     public HomeModel(DBHelper db) {
         this.mDBHelper = db;
     }
@@ -23,7 +27,7 @@ public final class HomeModel implements IHomeModel {
                if(  mDBHelper.getAllOfTheJourneys().size() > 0)
                    iOnCompleteModel.showSizeOfDB( mDBHelper.getAllOfTheJourneys().size() );
                else
-                   iOnCompleteModel.showError( "No recordings!!! Please, record a journey!");
+                   iOnCompleteModel.showError( ERROR_MESSAGE_1 );
     }
 
     @Override
@@ -36,9 +40,9 @@ public final class HomeModel implements IHomeModel {
         Boolean  wasSuccess = mDBHelper.writeJourneyInDB(jsonStr, timeStamp);
 
             if (wasSuccess)
-                iOnCompleteModel.showSuccess("Your journey has been successfully safed!");
+                iOnCompleteModel.showSuccess( SUCCESS_MESSAGE_2 );
             else
-                iOnCompleteModel.showError("Could not save your current journey!");
+                iOnCompleteModel.showError( ERROR_MESSAGE_2 );
 
     }
 

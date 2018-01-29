@@ -3,6 +3,8 @@ package floowuk.floow.screens.listofjourneys.mvp;
 import android.support.annotation.NonNull;
 import floowuk.floow.helpers.DBHelper;
 import floowuk.floow.model.UserLocationsDB;
+import floowuk.floow.screens.home.mvp.HomeModel;
+
 /*** Created by igorfrankiv on 28/01/2018.*/
 
 public final class ListModel implements IListModel {
@@ -21,6 +23,6 @@ public final class ListModel implements IListModel {
         if( userLocationsDB != null)
             iListOnCompleteModel.provideAllJourneys( userLocationsDB );
         else
-            iListOnCompleteModel.showError( "No recordings!!! Please, record a journey!");
+            iListOnCompleteModel.showError(  HomeModel.ERROR_MESSAGE_1 );
     }
 }

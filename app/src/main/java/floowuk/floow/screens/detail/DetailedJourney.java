@@ -39,6 +39,8 @@ public class DetailedJourney extends FragmentActivity implements OnMapReadyCallb
     private DBHelper mDBHelper;
     private PolylineOptions currPolylineOptions;
     private Integer  mId;
+    public static final String STARTED = " STARTED AT ";
+    public static final String FINISHED = " FINISHED AT ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,9 +99,10 @@ public class DetailedJourney extends FragmentActivity implements OnMapReadyCallb
             String dateStart = userLocations.getListOfUserLocations().get(0).getTime();
             String dateStop = userLocation.getTime();
 
-            tvStartAndFinishTimes.setText( dateStart+"=>"+ dateStop);
+            tvStartAndFinishTimes.setText(STARTED +dateStart+FINISHED+ dateStop);
             tvDuration.setText(TimeUtil.durationOfJourney ( dateStart,  dateStop));
             LatLng latLng1 = new LatLng(mListOfUserLocationsIn.get(0).getLatitude(), mListOfUserLocationsIn.get(0).getLongitude());
+
             nMap.moveCamera(CameraUpdateFactory.newLatLng(latLng1));
             nMap.animateCamera(CameraUpdateFactory.zoomTo(19));
 

@@ -28,6 +28,9 @@ public class ServiceModel implements IServiceModel  {
     private ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
     public static final String JSON_LOCATION_FILE = "jsonlocation.json";
+    public static final String DEFAULT_FILE_ENCODING = "UTF-8";
+    public static final String READD_ERROR_MESSAGE ="Could not read the file!";
+    public static final String WRITE_ERROR_MESSAGE ="Could not write the file!";
 
     private final Context mContext;
 
@@ -47,7 +50,7 @@ public class ServiceModel implements IServiceModel  {
              final UserLocations userLocations =   JSONUtil.readJsonString(jsonStr);
              String isRecorded  = userLocations.getIsRecorded();
 
-             if (isRecorded.contains("YES")) {
+             if (isRecorded.contains( ServicePresenter.STATE_OF_RECORDDING_YES )) {
                  listOfUserLocations = userLocations.getListOfUserLocations();
              }
              else
@@ -58,11 +61,15 @@ public class ServiceModel implements IServiceModel  {
 
     @Override
     public void writeIOData( @NonNull List<UserLocation> listOfUserLocations,  @NonNull IServiceOnCompleteModel iServiceOnCompleteModel, String isRecorded){
-        String jsonListOfUserLocationsObj = JSONUtil.createJsonString( listOfUserLocations, isRecorded );
-        writingJSONFileToLocalDIR( mContext, jsonListOfUserLocationsObj);
 
-      if(isRecorded.contains("YES"))
+        String jsonListOfUserLocationsObj = JSONUtil.createJsonString( listOfUserLocations, isRecorded );
+        boolean isWrittenIO = writingJSONFileToLocalDIR( mContext, jsonListOfUserLocationsObj);
+
+      if(isRecorded.contains( ServicePresenter.STATE_OF_RECORDDING_YES ))
         iServiceOnCompleteModel.readyDataForBroadcast ( jsonListOfUserLocationsObj );
+
+      if(!isWrittenIO)
+          iServiceOnCompleteModel.showError(WRITE_ERROR_MESSAGE);
     }
 
     private String readJSONFileFromLocalDIR(Context context)
@@ -73,7 +80,6 @@ public class ServiceModel implements IServiceModel  {
         BufferedReader in = null;
         try
         {
-            final String DEFAULT_FILE_ENCODING = "UTF-8";
             File file = new File(context.getFilesDir(), JSON_LOCATION_FILE);
             in = new BufferedReader(new InputStreamReader(new FileInputStream(file), DEFAULT_FILE_ENCODING));
             String line;
@@ -84,8 +90,8 @@ public class ServiceModel implements IServiceModel  {
             try {
                 in.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                return READD_ERROR_MESSAGE;
             }
             finally {
 
@@ -96,7 +102,7 @@ public class ServiceModel implements IServiceModel  {
         return jsonData.toString();
     }
 
-    private  void writingJSONFileToLocalDIR( Context context, String jsonObj) {
+    private  boolean writingJSONFileToLocalDIR( Context context, String jsonObj) {
 
         rwlock.writeLock().lock();
 
@@ -107,11 +113,14 @@ public class ServiceModel implements IServiceModel  {
             writer.close();
         }
         catch(Exception e)
-        { /***Log.e("log_tag", "Error saving string "+e.toString());***/}
+        {
+            return false;
+        }
         finally {
 
         rwlock.writeLock().unlock();
 
         }
+        return true;
     }
 }
