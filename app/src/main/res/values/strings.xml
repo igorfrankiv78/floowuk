@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">floowuk</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="polyline_demo_description">Demonstrates how to add Polylines to a map.</string>
+</resources>
