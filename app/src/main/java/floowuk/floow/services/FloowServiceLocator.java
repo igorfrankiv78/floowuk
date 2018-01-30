@@ -5,6 +5,7 @@ package floowuk.floow.services;
 //    by at least minDistance meters, AND at least minTime milliseconds have passed
 //    A kilometre has 1000 metres, and an hour has 3600 seconds, so a kilometre per hour is:
 //    1000 / 3600 = 0.277
+// requestLocationUpdates(String provider, long minTime, float minDistance, LocationListener listener)
 //Kilometer per Hour     Meters per Second
 //     20kph                  5.56m/s
 //     30kph                  8.33m/s

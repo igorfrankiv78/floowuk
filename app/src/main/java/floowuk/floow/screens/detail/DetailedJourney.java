@@ -108,10 +108,11 @@ public class DetailedJourney extends FragmentActivity implements OnMapReadyCallb
             nMap.animateCamera(CameraUpdateFactory.zoomTo(19));
 
             if (currPolylineOptions == null)
-                currPolylineOptions = new PolylineOptions().width(5);
+                currPolylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(Color.BLUE).
+                        width(5);  //        LatLng target = mMap.getCameraPosition().target;
 
-            currPolylineOptions.color(Color.BLUE);
-            //        LatLng target = mMap.getCameraPosition().target;
             for (UserLocation s : mListOfUserLocationsIn) {
                 LatLng latLng = new LatLng(s.getLatitude(), s.getLongitude());
                 currPolylineOptions.add(latLng);
