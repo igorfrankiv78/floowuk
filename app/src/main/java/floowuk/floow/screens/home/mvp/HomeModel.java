@@ -13,9 +13,9 @@ public final class HomeModel implements IHomeModel {
 
     private final DBHelper mDBHelper;
 
-    public static final String ERROR_MESSAGE_1 = "No recordings!!! Please, record a journey!";
-    public static final String ERROR_MESSAGE_2 = "Could not save your current journey!";
-    public static final String SUCCESS_MESSAGE_2 = "Your journey has been successfully safed!";
+    public static final String ERROR_MESSAGE_SIZE = "No recordings!!! Please, record a journey!";
+    public static final String ERROR_MESSAGE_WRITE = "Could not save your current journey!";
+    public static final String SUCCESS_MESSAGE  = "Your journey has been successfully safed!";
 
     public HomeModel(DBHelper db) {
         this.mDBHelper = db;
@@ -24,10 +24,10 @@ public final class HomeModel implements IHomeModel {
     @Override
     public void getSizeOfDB( @NonNull IOnCompleteModel iOnCompleteModel) {
 
-               if(  mDBHelper.getAllOfTheJourneys().size() > 0)
+               if( mDBHelper.getAllOfTheJourneys().size() > 0 )
                    iOnCompleteModel.showSizeOfDB( mDBHelper.getAllOfTheJourneys().size() );
                else
-                   iOnCompleteModel.showError( ERROR_MESSAGE_1 );
+                   iOnCompleteModel.showError( ERROR_MESSAGE_SIZE );
     }
 
     @Override
@@ -35,15 +35,18 @@ public final class HomeModel implements IHomeModel {
                                   @NonNull IOnCompleteModel iOnCompleteModel, @NonNull String isRecorded) {
 
         String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
-        String jsonStr = JSONUtil.createJsonString(mListOfUserLocations, isRecorded);
 
-        Boolean  wasSuccess = mDBHelper.writeJourneyInDB(jsonStr, timeStamp);
+        if( mListOfUserLocations != null && isRecorded != null  ) {
+            String jsonStr = JSONUtil.createJsonString(mListOfUserLocations, isRecorded);
+
+            Boolean wasSuccess = mDBHelper.writeJourneyInDB(jsonStr, timeStamp);
 
             if (wasSuccess)
-                iOnCompleteModel.showSuccess( SUCCESS_MESSAGE_2 );
+                iOnCompleteModel.showSuccess(SUCCESS_MESSAGE );
             else
-                iOnCompleteModel.showError( ERROR_MESSAGE_2 );
-
+                iOnCompleteModel.showError(ERROR_MESSAGE_WRITE);
+        } else
+                iOnCompleteModel.showError(ERROR_MESSAGE_WRITE);
     }
 
 }

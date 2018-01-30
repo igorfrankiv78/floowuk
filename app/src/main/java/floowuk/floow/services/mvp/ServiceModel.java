@@ -16,7 +16,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import floowuk.floow.model.UserLocation;
 import floowuk.floow.model.UserLocations;
 import floowuk.floow.utils.JSONUtil;
-
 /*** Created by igorfrankiv on 28/01/2018.*/
 
 public class ServiceModel implements IServiceModel  {

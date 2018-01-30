@@ -56,9 +56,10 @@ public class DetailedJourney extends FragmentActivity implements OnMapReadyCallb
         mDBHelper = new DBHelper(this);
         mDetailPresenter = new DetailPresenter( mDBHelper, this );
 
-        tvStartAndFinishTimes = (TextView) findViewById(R.id.tvStartAndFinishTimes);
-        tvDuration = (TextView) findViewById(R.id.tvDuration);
-        btnDeleteUserJourney = (Button) findViewById(R.id.btnDeletePath);
+        tvStartAndFinishTimes = findViewById(R.id.tvStartAndFinishTimes);
+        tvDuration = findViewById(R.id.tvDuration);
+        btnDeleteUserJourney = findViewById(R.id.btnDeletePath);
+        btnDeleteUserJourney.setClickable(false);
         btnDeleteUserJourney.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +71,7 @@ public class DetailedJourney extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap map) {
       // Override the default content description on the view, for accessibility mode.
-        map.setContentDescription(getString(R.string.polyline_demo_description));
+        map.setContentDescription(getString(R.string.map_description));
         nMap = map;
 
         nMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);

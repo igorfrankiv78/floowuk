@@ -23,6 +23,6 @@ public final class ListModel implements IListModel {
         if( userLocationsDB != null)
             iListOnCompleteModel.provideAllJourneys( userLocationsDB );
         else
-            iListOnCompleteModel.showError(  HomeModel.ERROR_MESSAGE_1 );
+            iListOnCompleteModel.showError(  HomeModel.ERROR_MESSAGE_SIZE );
     }
 }

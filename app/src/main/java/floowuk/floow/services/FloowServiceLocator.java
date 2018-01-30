@@ -1,5 +1,15 @@
 package floowuk.floow.services;
-
+//    requestLocationUpdates(String provider, long minTime, float minDistance, LocationListener listener)
+//    The minDistance parameter can also be used to control the frequency of location updates. If it is greater
+//    than 0 then the location provider will only send your application an update when the location has changed
+//    by at least minDistance meters, AND at least minTime milliseconds have passed
+//    A kilometre has 1000 metres, and an hour has 3600 seconds, so a kilometre per hour is:
+//    1000 / 3600 = 0.277
+//Kilometer per Hour     Meters per Second
+//     20kph                  5.56m/s
+//     30kph                  8.33m/s
+//     40kph 		          11.11m/s
+//     50kph  		          13.89m/s
 /*** Created by igorfrankiv on 26/01/2018.*/
     import java.text.SimpleDateFormat;
     import java.util.Date;
@@ -26,8 +36,8 @@ public class FloowServiceLocator extends Service implements IServiceView {
     public static final String DISTANCE = "distance";
     public static final String NOTIFICATION = "FLOOW_USER_LOCATION";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 3f;// 10f
+    private static final int LOCATION_INTERVAL = 1000;// MINIMUM TIME IN MILISECONS 1000 = 1second
+    private static final float LOCATION_DISTANCE = 1f;// MINIMUM DISTANCE IN METERS
 
     private ServicePresenter mServicePresenter;
 
@@ -66,7 +76,7 @@ public class FloowServiceLocator extends Service implements IServiceView {
      @Override
      public void onLocationChanged(Location location)
      {
-         //+++++++++++++++++++++++++++++++READ THE DATA STARTS HERE
+         //-----INPUT OF THE DATA STARTS HERE AND MVP PRESENTER PROCESS EVERYTHING IN A CHAIN
          final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtil.PATTERN);
          final String time = simpleDateFormat.format(new Date());
          final double latitude = location.getLatitude();
@@ -100,8 +110,8 @@ public class FloowServiceLocator extends Service implements IServiceView {
 
  // Initilize The Above Inner Class
     FloowServiceLocator.LocationListener[] mLocationListeners = new FloowServiceLocator.LocationListener[] {
-            new FloowServiceLocator.LocationListener(LocationManager.GPS_PROVIDER),
-            new FloowServiceLocator.LocationListener(LocationManager.NETWORK_PROVIDER)
+            new FloowServiceLocator.LocationListener(LocationManager.GPS_PROVIDER)
+         , new FloowServiceLocator.LocationListener(LocationManager.NETWORK_PROVIDER)
     };
 
 
@@ -157,6 +167,7 @@ public class FloowServiceLocator extends Service implements IServiceView {
     public void onDestroy()
     {   Log.e(TAG, "onDestroy");
 
+        publishResults("", "", Activity.RESULT_CANCELED, "");
         mServicePresenter.writeIOdata(  );
 
         // Clearing Listeners

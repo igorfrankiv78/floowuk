@@ -2,6 +2,7 @@ package floowuk.floow.screens.home;
 
 /*** Created by igorfrankiv on 26/01/2018.*/
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,21 +32,27 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
 import floowuk.floow.helpers.DBHelper;
 import floowuk.floow.model.UserLocation;
 import floowuk.floow.model.UserLocations;
+import floowuk.floow.screens.customui.CustomProgressbar;
 import floowuk.floow.screens.home.mvp.IHomeView;
 import floowuk.floow.screens.listofjourneys.ListOfJourneys;
 import floowuk.floow.services.FloowServiceLocator;
 import floowuk.floow.screens.home.mvp.HomePresenter;
 import floowuk.floow.utils.JSONUtil;
+import floowuk.floow.utils.SharedPreferencesUtil;
 import flowigor.ie.floowuk.R;
 
 public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-                                                            GoogleApiClient.OnConnectionFailedListener, IHomeView
+                                                                   GoogleApiClient.OnConnectionFailedListener, IHomeView
 {
+    public static final String ERROR_START_SERVICE = "Could not the service!";
+    public static final String IS_RECORDED_POSITIVE = "YES";
+    public static final String IS_RECORDED_NEGATIVE = "NO";
     private List<UserLocation> mListOfUserLocations;
     private Button buttonstartService, buttonstopService, btnShowJourneys;
     private TextView tvDistance, tvDuration;
@@ -56,18 +63,24 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
     private GoogleApiClient mGoogleApiClient;
     private HomePresenter homePresenter;
     private DBHelper mDBHelper;
-    
+
 // ------ onCreate Block --------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_service);
 
-        btnShowJourneys = (Button) findViewById(R.id.btnShowJourneys);
-        buttonstartService = (Button) findViewById(R.id.buttonstartService);
-        buttonstopService = (Button) findViewById(R.id.buttonstopService);
-        tvDistance = (TextView) findViewById(R.id.tvDistance );
-        tvDuration = (TextView) findViewById(R.id.tvDuration );
+        btnShowJourneys = findViewById(R.id.btnShowJourneys);
+        buttonstartService = findViewById(R.id.buttonstartService);
+        buttonstopService = findViewById(R.id.buttonstopService);
+        tvDistance = findViewById(R.id.tvDistance );
+        tvDuration = findViewById(R.id.tvDuration );
+
+
+        if( SharedPreferencesUtil.isStartButtonTurnOn( this ) ){
+            buttonstopService.setVisibility(View.VISIBLE);
+            buttonstartService.setVisibility(View.GONE);
+        }
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -87,68 +100,88 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
 
             Bundle bundle = intent.getExtras();
 
-            Log.e(" onReceive resultCode", String.valueOf( RESULT_OK ) );
+            CustomProgressbar.hideProgressBar();
+
             if (bundle != null) {
 
                 int resultCode = bundle.getInt(FloowServiceLocator.RESULT);
                 if (resultCode == RESULT_OK) {
 
+                    SharedPreferencesUtil.setStartButtonOn( FloowHomeActivity.this );
+
                     String listOfUserLocationsStr = bundle.getString( FloowServiceLocator.LISTOFUSERLOCATIONS );
                     String timeStr = bundle.getString( FloowServiceLocator.TIME );
                     String distanceStr = bundle.getString( FloowServiceLocator.DISTANCE );
-
-                    tvDuration.setText(timeStr);
-                    tvDistance.setText(distanceStr);
 
                     UserLocations userLocations = JSONUtil.readJsonString(  listOfUserLocationsStr);
                         mListOfUserLocations = userLocations.getListOfUserLocations();
 
                     String IsRecorded = userLocations.getIsRecorded();
 
-                    if(IsRecorded.contains("YES")) {
-                        buttonstopService.setVisibility(View.VISIBLE);
-                        buttonstartService.setVisibility(View.GONE);
-                    }
-                    if(IsRecorded.contains("NO")) {
-                        buttonstopService.setVisibility(View.GONE);
-                        buttonstartService.setVisibility(View.VISIBLE);
-                    }
-                 // ---------------------------------------------------
+                    settingUIelement( IsRecorded,  timeStr,  distanceStr);
 
-                    if (mCurrLocationMarker != null) {
-                        mCurrLocationMarker.remove();
-                    }
+                    activateLocationMapping( timeStr );
 
-                    if(mListOfUserLocations.size() > 0 ) {
-                        UserLocation userLocation = mListOfUserLocations.get(mListOfUserLocations.size() - 1);
-
-                        // Place current location marker
-                        LatLng latLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-                        MarkerOptions markerOptions = new MarkerOptions();
-                                    markerOptions.position(latLng);
-                                    markerOptions.title(timeStr);
-                                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                        mCurrLocationMarker = mMap.addMarker(markerOptions);
-
-                        //move map camera
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(19));
-
-                        buttonstopService.setClickable(true);
-                        // Drawing a new line to the current location
-                        if (currPolylineOptions == null)
-                            currPolylineOptions = new PolylineOptions().width(5);
-
-                        currPolylineOptions.color(Color.BLUE);
-
-                        currPolylineOptions.add(latLng);
-                        mMap.addPolyline(currPolylineOptions);
-                    }
-                //  ----------------------------------------------------
                 }
+                else {
+                    Toast.makeText(FloowHomeActivity.this, ERROR_START_SERVICE,  Toast.LENGTH_LONG).show();
+                    SharedPreferencesUtil.setStartButtonOff( FloowHomeActivity.this );
+                    buttonstopService.setVisibility(View.GONE);
+                    buttonstartService.setVisibility(View.VISIBLE);
+                    mMap.clear();
+                }
+
             }
         }
     };
+
+    public void activateLocationMapping(String timeStr){
+
+        if (mCurrLocationMarker != null) {
+            mCurrLocationMarker.remove();
+        }
+
+        if(mListOfUserLocations.size() > 0 ) {
+            UserLocation userLocation = mListOfUserLocations.get(mListOfUserLocations.size() - 1);
+
+            // Place current location marker
+            LatLng latLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title(timeStr);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+            mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+            //move map camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(19));
+
+            buttonstopService.setClickable(true);
+            // Drawing a new line to the current location
+            if (currPolylineOptions == null)
+                currPolylineOptions = new PolylineOptions().width(5);
+
+            currPolylineOptions.color(Color.BLUE);
+
+            currPolylineOptions.add(latLng);
+            mMap.addPolyline(currPolylineOptions);
+        }
+    }
+
+    public void settingUIelement(String IsRecorded, String timeStr, String distanceStr){
+
+        tvDuration.setText(timeStr);
+        tvDistance.setText(distanceStr);
+
+        if(IsRecorded.contains(IS_RECORDED_POSITIVE)) {
+            buttonstopService.setVisibility(View.VISIBLE);
+            buttonstartService.setVisibility(View.GONE);
+        }
+        if(IsRecorded.contains(IS_RECORDED_NEGATIVE)) {
+            buttonstopService.setVisibility(View.GONE);
+            buttonstartService.setVisibility(View.VISIBLE);
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -218,12 +251,10 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
                 //Prompt the user once explanation has been shown
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
-                Log.e("+onMapReady ", "+ if checkLocationPermission ");
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
-                Log.e("+onMapReady ", "+ else checkLocationPermission ");
             }
             return false;
         } else {
@@ -273,13 +304,14 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
 
     // ------ Start and Stop Services Block --------------------------------
     public void startService(View view) {
-        Intent intent = new Intent(getApplicationContext(), FloowServiceLocator.class);
-        startService(intent);
+        CustomProgressbar.showProgressBar( this, false);
+            Intent intent = new Intent(getApplicationContext(), FloowServiceLocator.class);
+            startService(intent);
     }
 
     public void stopService(View view) {
         stopService(new Intent(getBaseContext(), FloowServiceLocator.class));
-        homePresenter.writeJoutneyInDB( mListOfUserLocations,  "YES");
+        homePresenter.writeJoutneyInDB( mListOfUserLocations,  IS_RECORDED_POSITIVE);
     }
 
     public void showJourneys(View view) {
