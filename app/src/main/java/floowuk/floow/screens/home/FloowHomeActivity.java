@@ -103,8 +103,7 @@ import flowigor.ie.floowuk.R;
 //       However there are bugs and deprecated methods that I have to be aware of.
 //        So I decided to start with simple one (the first one ) and then to go with the second one.
 //
-//
-// I think your company is doing something
+//        I think your company is doing something
 //        requestLocationUpdates(String provider, long minTime, float minDistance, LocationListener listener)
 //        Kilometer per Hour     Meters per Second
 //            20kph                  5.56m/s
@@ -195,7 +194,7 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
 
                 }
                 else {
-                    Toast.makeText(FloowHomeActivity.this, ERROR_START_SERVICE,  Toast.LENGTH_LONG).show();
+//                    Toast.makeText(FloowHomeActivity.this, ERROR_START_SERVICE,  Toast.LENGTH_LONG).show();
                     SharedPreferencesUtil.setStartButtonOff( FloowHomeActivity.this );
                     buttonstopService.setVisibility(View.GONE);
                     buttonstartService.setVisibility(View.VISIBLE);
