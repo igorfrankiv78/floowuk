@@ -48,7 +48,10 @@ import flowigor.ie.floowuk.R;
 
 //         To whom it may concern
 //         The project consists of three activities (screens). They are FloowHomeActivity,
-//         ListOfJourneys, DetailedJourney. The Android Architecture chosen is MVP, which support all of the above screens. The MVP also supports the service class with name “FloowServiceLocator”. I wanted to include the RXJava, Dagger2 with MVP or ViewModel(I have never worked with it. I just started learning this one. It is a MVVM with something similar RXJava implementations ). I decided to go a simple MVP.
+//         ListOfJourneys, DetailedJourney. The Android Architecture chosen is MVP, which support all of the above screens.
+//        The MVP also supports the service class with name “FloowServiceLocator”. I wanted to include the RXJava, Dagger2 with MVP
+//        or ViewModel(I have never worked with it. I just started learning this one. It is a MVVM with something similar RXJava implementations ).
+//        I decided to go a simple MVP.
 //        I will begin with the FloowHomeActivity which is the starting point of the Application.
 //        It has 5 Objects;
 //        show journey Button,
@@ -56,14 +59,25 @@ import flowigor.ie.floowuk.R;
 //        the time elapsed since the journey was started Textview,
 //        start and stop Button which starts the background service,
 //        map fragment which shows the map.
-//        So when a User presses the start button, it starts the Service “FloowServiceLocator” (this button will be set as pressed with share preferences because if a user closes the App and reopens it. The button will be set as Start Recording Button, while it should show Stop Recording Button util it gets the broadcast from the Service. So that was unacceptable.There were three options; share preference, to show progress dialog or reading the read and write operation file of the Service class. I chose the first one. Actually the Receiver sets this as on and off  ).
-//        The operation of Service class starts  with getting latitude, longitude, time and passing them to the Presenter which will process in the chain of read (if a json file is existing or will populate a List (ArrayList) and write it for the first time to the local directory) , will populate a List, convert it a to json format, write it to the local directory as a json format and then the Presenter passes the JSON object to the Service class, Service class passes it the Activity to show the current location.
+//        So when a User presses the start button, it starts the Service “FloowServiceLocator” (this button will be set as pressed with share preferences
+//        because if a user closes the App and reopens it. The button will be set as Start Recording Button, while it should show Stop Recording Button util it
+//        gets the broadcast from the Service. So that was unacceptable.There were three options; share preference, to show progress dialog or reading the read
+//        and write operation file of the Service class. I chose the first one. Actually the Receiver sets this as on and off  ).
+//        The operation of Service class starts  with getting latitude, longitude, time and passing them to the Presenter which will process in the chain
+//        of read (if a json file is existing or will populate a List (ArrayList) and write it for the first time to the local directory) , will populate a List,
+//        convert it a to json format, write it to the local directory as a json format and then the Presenter passes the JSON object to the Service class, Service
+//        class passes it the Activity to show the current location.
 //        Now about why is read and write each time it gets latitude, longitude, time.
-//        For a user can close the app, then the service is reloading and it will lose all of the data it was holding in the List (Array list) before or the mobile phone will be restarted, then the Service will lose all the data
+//        For a user can close the app, then the service is reloading and it will lose all of the data it was holding in the List (Array list) before or
+//        the mobile phone will be restarted, then the Service will lose all the data
 //        And will never be restarted until a user will start it again.
-//        So there is the son file with data and object with a  key word string “YES” or “NO”. If the service  was in recording mode “YES”, the app was closed or the phone restarted(the app has the wake up class which restarts the service with the operation “YES”), it will restart the same recording and will continue to do so until a user presses “Stop Button”.
+//        So there is the son file with data and object with a  key word string “YES” or “NO”. If the service  was in recording mode “YES”, the app was closed
+//        or the phone restarted(the app has the wake up class which restarts the service with the operation “YES”), it will restart the same recording and will
+//        continue to do so until a user presses “Stop Button”.
 //
-//        The read and write operation is sequenced with ReadWriteLock rwlock = new ReentrantReadWriteLock() for avoiding read and write operations (it can read the data and user presses “Stops” write operation “NO”). First I wanted to go with Synchronised multithreading (It was working). But then I decided to go with the first one.
+//        The read and write operation is sequenced with ReadWriteLock rwlock = new ReentrantReadWriteLock() for avoiding read and write operations (it can read
+//        the data and user presses “Stops” write operation “NO”). First I wanted to go with Synchronised multithreading (It was working). But then I decided to go
+//        with the first one.
 //
 //        The stop button in FloowHomeActivity  saves it (JSON file to the Sqlite DB). It was a simple solution to save a List to a DB
 //        Table. There are the other solutions.
