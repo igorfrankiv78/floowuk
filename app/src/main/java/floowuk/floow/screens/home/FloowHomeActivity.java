@@ -33,6 +33,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import floowuk.floow.helpers.DBHelper;
 import floowuk.floow.model.UserLocation;
@@ -44,6 +48,7 @@ import floowuk.floow.services.FloowServiceLocator;
 import floowuk.floow.screens.home.mvp.HomePresenter;
 import floowuk.floow.utils.JSONUtil;
 import floowuk.floow.utils.SharedPreferencesUtil;
+import floowuk.floow.utils.TimeUtil;
 import flowigor.ie.floowuk.R;
 
 //         To whom it may concern
@@ -119,8 +124,6 @@ import flowigor.ie.floowuk.R;
 //        For I want to improve this project and my skills in this field of Android.
 //        Than you very much!
 
-
-
 public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCallback, IHomeView
 {
     public static final String ERROR_START_SERVICE = "Could not the service!";
@@ -136,19 +139,25 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
     private GoogleApiClient mGoogleApiClient;
     private HomePresenter homePresenter;
     private DBHelper mDBHelper;
-
+    private String currentTime = "";
+    private Boolean isAlreadyPopulated = false;
+    private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 // ------ onCreate Block --------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_service);
 
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtil.PATTERN);
+        currentTime = simpleDateFormat.format(new Date());
+
+        Log.e( " currentTime = ",  currentTime);
+
         btnShowJourneys = findViewById(R.id.btnShowJourneys);
         buttonstartService = findViewById(R.id.buttonstartService);
         buttonstopService = findViewById(R.id.buttonstopService);
         tvDistance = findViewById(R.id.tvDistance );
         tvDuration = findViewById(R.id.tvDuration );
-
 
         if( SharedPreferencesUtil.isStartButtonTurnOn( this ) ){
             buttonstopService.setVisibility(View.VISIBLE);
@@ -200,7 +209,6 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
                     buttonstartService.setVisibility(View.VISIBLE);
                     mMap.clear();
                 }
-
             }
         }
     };
@@ -211,15 +219,49 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
             mCurrLocationMarker.remove();
         }
 
-        if(mListOfUserLocations.size() > 0 ) {
-            UserLocation userLocation = mListOfUserLocations.get(mListOfUserLocations.size() - 1);
 
+        try {
+
+        if(mListOfUserLocations.size() > 0 ) {
+
+            Date date1 = sdf.parse(currentTime);
+            Date date2 = sdf.parse(mListOfUserLocations.get(0).getTime());
+
+            if (date1.compareTo(date2) > 0)
+            {// take the whole array  currentTime = "01/31/2018 12:19:05"; serviceTime = "01/31/2018 12:19:04"
+                if(isAlreadyPopulated == false)
+                {
+                  isAlreadyPopulated = true;
+                    LatLng latLng1 = new LatLng(mListOfUserLocations.get(0).getLatitude(), mListOfUserLocations.get(0).getLongitude());
+
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng1));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(19));
+
+                    if (currPolylineOptions == null)
+                        currPolylineOptions = new PolylineOptions().
+                                geodesic(true).
+                                color(Color.GREEN).
+                                width(5);
+
+                    for (UserLocation s : mListOfUserLocations) {
+                        LatLng latLng = new LatLng(s.getLatitude(), s.getLongitude());
+                        currPolylineOptions.add(latLng);
+                    }
+
+                    mMap.addPolyline(currPolylineOptions);
+
+                }
+            }
+            else if (date1.compareTo(date2) < 0)
+            {// take one by one from array currentTime = "01/31/2018 12:19:05";  serviceTime = "01/31/2018 12:19:06";
+                System.out.println("currentTime is before serviceTime");
+            UserLocation userLocation = mListOfUserLocations.get(mListOfUserLocations.size() - 1);
             // Place current location marker
             LatLng latLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(timeStr);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                markerOptions.position(latLng);
+                markerOptions.title(timeStr);
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_MAGENTA ));
             mCurrLocationMarker = mMap.addMarker(markerOptions);
 
             //move map camera
@@ -235,6 +277,13 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
 
             currPolylineOptions.add(latLng);
             mMap.addPolyline(currPolylineOptions);
+
+            }
+        }
+
+
+        } catch (ParseException e){
+
         }
     }
 
@@ -287,7 +336,6 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
             mMap.setMyLocationEnabled(true);
         }
     }
-
     // ------ Start and Stop Services Block --------------------------------
     public void startService(View view) {
         CustomProgressbar.showProgressBar( this, false);

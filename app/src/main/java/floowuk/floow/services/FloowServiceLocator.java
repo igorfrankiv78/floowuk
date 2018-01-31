@@ -80,13 +80,12 @@ public class FloowServiceLocator extends Service implements IServiceView {
          //-----INPUT OF THE DATA STARTS HERE AND MVP PRESENTER PROCESS EVERYTHING IN A CHAIN
          final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtil.PATTERN);
          final String time = simpleDateFormat.format(new Date());
+
          final double latitude = location.getLatitude();
          final double longitude = location.getLongitude();
 
          mServicePresenter.setLocationData( latitude, longitude, time );
-
          Log.e(TAG, "onLocationChanged = : " + location);
-
          mLastLocation.set(location);
      }
 
