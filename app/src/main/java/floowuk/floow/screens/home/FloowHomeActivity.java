@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import floowuk.floow.helpers.DBHelper;
+import floowuk.floow.model.LastKnownResults;
 import floowuk.floow.model.UserLocation;
 import floowuk.floow.model.UserLocations;
 import floowuk.floow.screens.customui.CustomProgressbar;
@@ -141,17 +142,15 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
     private DBHelper mDBHelper;
     private String currentTime = "";
     private Boolean isAlreadyPopulated = false;
-    private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtil.PATTERN);
 // ------ onCreate Block --------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_service);
 
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtil.PATTERN);
-        currentTime = simpleDateFormat.format(new Date());
 
-        Log.e( " currentTime = ",  currentTime);
+        currentTime = simpleDateFormat.format(new Date());
 
         btnShowJourneys = findViewById(R.id.btnShowJourneys);
         buttonstartService = findViewById(R.id.buttonstartService);
@@ -160,8 +159,14 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
         tvDuration = findViewById(R.id.tvDuration );
 
         if( SharedPreferencesUtil.isStartButtonTurnOn( this ) ){
+            CustomProgressbar.showProgressBar( this, false);
             buttonstopService.setVisibility(View.VISIBLE);
             buttonstartService.setVisibility(View.GONE);
+
+            LastKnownResults lastKnownResults = SharedPreferencesUtil.getLastKnownResults( FloowHomeActivity.this );
+
+            tvDistance.setText( lastKnownResults.getDistance() );
+            tvDuration.setText( lastKnownResults.getTime() );
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -192,6 +197,8 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
                     String timeStr = bundle.getString( FloowServiceLocator.TIME );
                     String distanceStr = bundle.getString( FloowServiceLocator.DISTANCE );
 
+                    SharedPreferencesUtil.setLastKnownResults(FloowHomeActivity.this,  timeStr,  distanceStr );
+
                     UserLocations userLocations = JSONUtil.readJsonString(  listOfUserLocationsStr);
                         mListOfUserLocations = userLocations.getListOfUserLocations();
 
@@ -219,13 +226,12 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
             mCurrLocationMarker.remove();
         }
 
-
         try {
 
         if(mListOfUserLocations.size() > 0 ) {
 
-            Date date1 = sdf.parse(currentTime);
-            Date date2 = sdf.parse(mListOfUserLocations.get(0).getTime());
+            Date date1 = simpleDateFormat.parse(currentTime);
+            Date date2 = simpleDateFormat.parse(mListOfUserLocations.get(0).getTime());
 
             if (date1.compareTo(date2) > 0)
             {// take the whole array  currentTime = "01/31/2018 12:19:05"; serviceTime = "01/31/2018 12:19:04"
@@ -247,9 +253,7 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
                         LatLng latLng = new LatLng(s.getLatitude(), s.getLongitude());
                         currPolylineOptions.add(latLng);
                     }
-
                     mMap.addPolyline(currPolylineOptions);
-
                 }
             }
             else if (date1.compareTo(date2) < 0)
@@ -280,8 +284,6 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
 
             }
         }
-
-
         } catch (ParseException e){
 
         }
