@@ -1,71 +1,54 @@
 package floowuk.floow.helpers;
 
+import java.util.ArrayList;
+import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import android.database.sqlite.SQLiteDatabase;
 import floowuk.floow.model.LastRecord;
 import floowuk.floow.model.UserLocationsDB;
-/*** Created by igorfrankiv on 21/01/2018.*/
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "DataBaseOfUserLocations.db";
-    public static final String TABLE_NAME_LIST_OF_USER_JOURNEYS = "tablelistLocations";
-    public static final String  LIST_US_LC_COLUMN_ID= "id";
-    public static final String COLUMN_LIST_OF_USER_LOCATIONS = "listOfUserLocations";
-    public static final String COLUMN_TIME = "time";
-    private HashMap hp;
+  public static final String DATABASE_NAME = "DataBaseOfUserLocations.db";
+      public static final String TABLE_NAME_LIST_OF_USER_JOURNEYS = "tablelistLocations";
+      public static final String LIST_US_LC_COLUMN_ID= "id";
+      public static final String COLUMN_LIST_OF_USER_LOCATIONS = "listOfUserLocations";
+      public static final String COLUMN_TIME = "time";
 
-    public DBHelper(Context context) {
-        super(context, DATABASE_NAME , null, 1);
-    }
+   public DBHelper(Context context) {
+      super(context, DATABASE_NAME , null, 1);
+   }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        // TODO Auto-generated method stub
-        db.execSQL(
-                "create table TABLE_NAME_LIST_OF_USER_JOURNEYS " +
-                          "(id integer primary key, "+COLUMN_LIST_OF_USER_LOCATIONS+" text,"+COLUMN_TIME+" text)"
-        );
-    }
+   @Override
+   public void onCreate(SQLiteDatabase db) {
+      // TODO Auto-generated method stub
+      db.execSQL(
+         "create table tablelistLocations " +
+          "(id integer primary key, "+COLUMN_LIST_OF_USER_LOCATIONS+" text,"+COLUMN_TIME+" text)"
+      );
+   }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Auto-generated method stub
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME_LIST_OF_USER_JOURNEYS);
-        onCreate(db);
-    }
+   @Override
+   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+      // TODO Auto-generated method stub
+       db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME_LIST_OF_USER_JOURNEYS);
+      onCreate(db);
+   }
+   // ------------------------------------------------
+   public boolean writeJourneyInDB  (String listOfUserLocations, String time) {
+       SQLiteDatabase db = this.getWritableDatabase();
+               ContentValues contentValues = new ContentValues();
+               contentValues.put(COLUMN_LIST_OF_USER_LOCATIONS, listOfUserLocations);
+               contentValues.put(COLUMN_TIME, time);
+               db.insert(TABLE_NAME_LIST_OF_USER_JOURNEYS, null, contentValues);
+               return true;
+   }
 
-    public boolean writeJourneyInDB (String listOfUserLocations, String time) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_LIST_OF_USER_LOCATIONS, listOfUserLocations);
-        contentValues.put(COLUMN_TIME, time);
-        db.insert(TABLE_NAME_LIST_OF_USER_JOURNEYS, null, contentValues);
-        return true;
-    }
-
-    public int numberOfRows(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        int numRows = (int) DatabaseUtils.queryNumEntries(db, TABLE_NAME_LIST_OF_USER_JOURNEYS);
-        return numRows;
-    }
-
-    public Integer deleteUserJourney(Integer id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME_LIST_OF_USER_JOURNEYS,
-                "id = ? ",
-                new String[] { Integer.toString(id) });
-    }
-
-    public ArrayList<String> getAllOfTheJourneys() {
-           ArrayList<String> array_list = new ArrayList<String>();
+  public ArrayList<String> getAllOfTheJourneys() {
+        ArrayList<String> array_list = new ArrayList<String>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from "+TABLE_NAME_LIST_OF_USER_JOURNEYS, null );
         res.moveToFirst();
@@ -75,57 +58,93 @@ public class DBHelper extends SQLiteOpenHelper {
             res.moveToNext();
         }
         return array_list;
-    }
+  }
 
-    public UserLocationsDB getAllJourneys() {
-        List<String> listOfIds = new ArrayList<String>();
-        List<String> listOflocations = new ArrayList<String>();
-        List<String> listOfTimeStamps = new ArrayList<String>();
+  public String getDetailedRecord(int id) {
+           SQLiteDatabase db = this.getReadableDatabase();
+           Cursor res =  db.rawQuery( "select * from "+TABLE_NAME_LIST_OF_USER_JOURNEYS+" where id="+id, null );
+           if (res != null)
+               res.moveToFirst();
+           String str = res.getString(res.getColumnIndex(COLUMN_LIST_OF_USER_LOCATIONS));
+           return str;
+   }
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from "+TABLE_NAME_LIST_OF_USER_JOURNEYS, null );
-        res.moveToFirst();
-
-        while(res.isAfterLast() == false){
-            listOfIds.add( String.valueOf( res.getInt(res.getColumnIndex(LIST_US_LC_COLUMN_ID ))));
-            listOflocations.add(res.getString(res.getColumnIndex(COLUMN_LIST_OF_USER_LOCATIONS)));
-            listOfTimeStamps.add(res.getString(res.getColumnIndex(COLUMN_TIME)));
-            res.moveToNext();
+  public Integer deleteUserJourney(Integer id) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            return db.delete(TABLE_NAME_LIST_OF_USER_JOURNEYS,
+                    "id = ? ",
+                    new String[] { Integer.toString(id) });
         }
-        return new UserLocationsDB( listOfIds,  listOflocations, listOfTimeStamps );
-    }
 
-    public String getDetailedRecord(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from "+TABLE_NAME_LIST_OF_USER_JOURNEYS+" where id="+id, null );
-        if (res != null)
-        res.moveToFirst();
-        String str = res.getString(res.getColumnIndex(COLUMN_LIST_OF_USER_LOCATIONS));
-        return str;
-    }
+   public UserLocationsDB getAllJourneys() {
+           List<String> listOfIds = new ArrayList<String>();
+           List<String> listOflocations = new ArrayList<String>();
+           List<String> listOfTimeStamps = new ArrayList<String>();
+   
+           SQLiteDatabase db = this.getReadableDatabase();
+           Cursor res =  db.rawQuery( "select * from "+TABLE_NAME_LIST_OF_USER_JOURNEYS, null );
+           res.moveToFirst();
+   
+           while(res.isAfterLast() == false){
+               listOfIds.add( String.valueOf( res.getInt(res.getColumnIndex(LIST_US_LC_COLUMN_ID ))));
+               listOflocations.add(res.getString(res.getColumnIndex(COLUMN_LIST_OF_USER_LOCATIONS)));
+               listOfTimeStamps.add(res.getString(res.getColumnIndex(COLUMN_TIME)));
+               res.moveToNext();
+           }
+           return new UserLocationsDB( listOfIds,  listOflocations, listOfTimeStamps );
+       }
+  // -----------------------------------------------------------------------------------
+  // -------------- This methods bellow are not used
+       public boolean updateRecord (Integer id, String listOfUserLocations, String time) {
+           SQLiteDatabase db = this.getWritableDatabase();
+           ContentValues contentValues = new ContentValues();
+           contentValues.put(COLUMN_LIST_OF_USER_LOCATIONS, listOfUserLocations);
+           contentValues.put(COLUMN_TIME, time);
+           db.update(TABLE_NAME_LIST_OF_USER_JOURNEYS, contentValues, "id = ? ", new String[] { Integer.toString(id) } );
+           return true;
+   }
 
-    public LastRecord getLastRecordOfListLocations( ) {
-        SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM tablelistLocations WHERE ID = (SELECT MAX(ID) FROM tablelistLocations)", null);
-        String listOfLocations = "";
-        int id = 0;
-        if (cursor.moveToFirst()) {
-            listOfLocations = cursor.getString(cursor.getColumnIndex(COLUMN_LIST_OF_USER_LOCATIONS));
-            id = cursor.getInt(cursor.getColumnIndex(LIST_US_LC_COLUMN_ID));
-        }
-        cursor.close();
+       public LastRecord getLastRecordOfListLocations( ) {
+           SQLiteDatabase db = this.getWritableDatabase();
 
-        return new LastRecord( id, listOfLocations);
-    }
+           Cursor cursor = db.rawQuery("SELECT * FROM tablelistLocations WHERE ID = (SELECT MAX(ID) FROM tablelistLocations)", null);
+           String listOfLocations = "";
+           int id = 0;
+           if (cursor.moveToFirst()) {
+               listOfLocations = cursor.getString(cursor.getColumnIndex(COLUMN_LIST_OF_USER_LOCATIONS));
+               id = cursor.getInt(cursor.getColumnIndex(LIST_US_LC_COLUMN_ID));
+           }
+           cursor.close();
 
-    public boolean updateRecord (Integer id, String listOfUserLocations, String time) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_LIST_OF_USER_LOCATIONS, listOfUserLocations);
-        contentValues.put(COLUMN_TIME, time);
-        db.update(TABLE_NAME_LIST_OF_USER_JOURNEYS, contentValues, "id = ? ", new String[] { Integer.toString(id) } );
-        return true;
-    }
+           return new LastRecord( id, listOfLocations);
+       }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
