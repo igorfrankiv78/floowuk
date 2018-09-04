@@ -4,11 +4,18 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+//buildscript {
+//    repositories {
+//        mavenCentral()
+//    }
+//}
+//        multiDexEnabled true
 android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "flowigor.ie.floowuk"
-        minSdkVersion 15
+//        minSdkVersion 15
+        minSdkVersion 18
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -38,30 +45,82 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+//    sourceSets {
+//
+//        androidTest {
+//            java.srcDirs = ['androidTest/java']
+//        }
+//
+//    }
+}
+
+//android.applicationVariants.all { variant ->
+//    if (variant.buildType.name == "debug") {
+//        def aptOutputDir = new File(buildDir, "generated/source/apt/${variant.unitTestVariant.dirName}")
+//        variant.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
+//        assembleDebug.finalizedBy('assembleDebugUnitTest')
+//    }android.applicationVariants.all { variant ->
+//    if (variant.buildType.name == "debug") {
+//        def aptOutputDir = new File(buildDir, "generated/source/apt/${variant.unitTestVariant.dirName}")
+//        variant.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
+//        assembleDebug.finalizedBy('assembleDebugUnitTest')
+//    }
+//}
+//}
+
+
+//Kapt works for both java and kotlin classes
+kapt {
+    generateStubs = true
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    //Dagger
-    implementation 'com.google.dagger:dagger:2.6'
-    kapt 'com.google.dagger:dagger-compiler:2.6'
+    //  Dagger
+    implementation 'com.google.dagger:dagger:2.13'
+    kapt 'com.google.dagger:dagger-compiler:2.13'
     provided 'javax.annotation:jsr250-api:1.0'
+    annotationProcessor "com.google.dagger:dagger-compiler:2.13"
+    androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:2.13"
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:2.13"
+    //--------------------------------------------------------------------------
+
+    // Network
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.2.0'
+//    implementation 'com.squareup.picasso:picasso:2.5.2'
+//    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.0.0'
+    //--------------------------------------------------------------------------
 
     //RxJava
     implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'io.reactivex:rxjava:1.1.6'
     implementation 'com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:0.4.0'
     implementation 'com.jakewharton.rxrelay:rxrelay:1.1.0'
-    implementation "com.twistedequations.rx:rx-savestate:1.0.0"
+    implementation 'com.twistedequations.rx:rx-savestate:1.0.0'
     implementation 'com.twistedequations.rx:rx-android-schedulers:1.1.0'
+    //--------------------------------------------------------------------------
 
     //Butternufe
     implementation 'com.jakewharton:butterknife:8.0.1'
     kapt 'com.jakewharton:butterknife-compiler:8.0.1'
-
+    //--------------------------------------------------------------------------
     //Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    //--------------------------------------------------------------------------
 
     //Android
     implementation 'com.android.support:appcompat-v7:26.1.0'
@@ -69,19 +128,62 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support:cardview-v7:26.1.0'
+    //--------------------------------------------------------------------------
 
     //Google Map
     implementation 'com.google.android.gms:play-services-maps:11.8.0'
-    implementation "com.google.android.gms:play-services-location:11.8.0"
+    implementation 'com.google.android.gms:play-services-location:11.8.0'
     implementation 'com.google.android.gms:play-services-places:11.8.0'
+    //--------------------------------------------------------------------------
 
     //Data
-    implementation 'com.google.code.gson:gson:2.3.1'
     implementation 'com.fatboyindustrial.gson-jodatime-serialisers:gson-jodatime-serialisers:1.2.0'
-//   implementation 'com.google.code.gson:gson:2.7'
+    //--------------------------------------------------------------------------
 
-    //Android Testing
+    // Android Testing
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    // Android runner and rules support
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+    //--------------------------------------------------------------------------
+    androidTestCompile 'com.squareup.retrofit2:retrofit-mock:2.0.0'
+    androidTestCompile ('com.squareup.okhttp:mockwebserver:2.7.0')
+    //--------------------------------------------------------------------------
+    testCompile 'com.google.truth:truth:0.28'
+    testCompile 'org.mockito:mockito-core:2.8.8'
+    androidTestCompile 'org.mockito:mockito-android:2.8.8'
+    //--------------------------------------------------------------------------
+    testCompile 'com.jayway.android.robotium:robotium-solo:5.6.3'
+    testCompile 'org.robolectric:robolectric:3.3.2'
+    //--------------------------------------------------------------------------
+    // Espresso support
+    androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.1', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    //--------------------------------------------------------------------------
+    // add this for intent mocking support
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
+    //--------------------------------------------------------------------------
+    // add this for webview testing support
+//    androidTestCompile 'com.android.support.test.espresso:espresso-web:3.0.1'
+    //--------------------------------------------------------------------------
 }
+//#DAGGER_VERSION = 2.13
+//#RUNNER_VERSION = 0.5
+//#MOCKITO_VERSION = 2.8.8
+//#
+//#android.enableAapt2=false
+//# mine
+//# DAGGER_VERSION = 2.6
+//# RUNNER_VERSION = 0.5
+//# MOCKITO_VERSION = 1.10.19
+
+//androidTestCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
+//androidTestCompile "org.mockito:mockito-android:$MOCKITO_VERSION"
+//androidTestCompile "com.android.support.test:runner:$RUNNER_VERSION"
+//androidTestCompile "com.android.support.test:rules:$RUNNER_VERSION"
+//androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {
+//    exclude group: 'javax.inject', module: 'javax.inject'
+//    exclude group: 'com.squareup', module: 'javawriter'
+//}

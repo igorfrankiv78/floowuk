@@ -12,7 +12,7 @@ import floowuk.floow.model.UserLocationsDB;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-  public static final String DATABASE_NAME = "DataBaseOfUserLocations.db";
+      public static final String DATABASE_NAME = "DataBaseOfUserLocations.db";
       public static final String TABLE_NAME_LIST_OF_USER_JOURNEYS = "tablelistLocations";
       public static final String LIST_US_LC_COLUMN_ID= "id";
       public static final String COLUMN_LIST_OF_USER_LOCATIONS = "listOfUserLocations";
@@ -37,7 +37,7 @@ public class DBHelper extends SQLiteOpenHelper {
        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME_LIST_OF_USER_JOURNEYS);
       onCreate(db);
    }
-   // ------------------------------------------------
+   // ---------------------------------------------------------------------------------
    public boolean writeJourneyInDB  (String listOfUserLocations, String time) {
        SQLiteDatabase db = this.getWritableDatabase();
                ContentValues contentValues = new ContentValues();
@@ -94,7 +94,7 @@ public class DBHelper extends SQLiteOpenHelper {
            return new UserLocationsDB( listOfIds,  listOflocations, listOfTimeStamps );
        }
   // -----------------------------------------------------------------------------------
-  // -------------- This methods bellow are not used
+  // -------------- This methods bellow are not used -----------------------------------
        public boolean updateRecord (Integer id, String listOfUserLocations, String time) {
            SQLiteDatabase db = this.getWritableDatabase();
            ContentValues contentValues = new ContentValues();
@@ -102,8 +102,7 @@ public class DBHelper extends SQLiteOpenHelper {
            contentValues.put(COLUMN_TIME, time);
            db.update(TABLE_NAME_LIST_OF_USER_JOURNEYS, contentValues, "id = ? ", new String[] { Integer.toString(id) } );
            return true;
-   }
-
+        }
 
        public LastRecord getLastRecordOfListLocations( ) {
            SQLiteDatabase db = this.getWritableDatabase();

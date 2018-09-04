@@ -1,12 +1,7 @@
 package floowuk.floow.services;
 
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
-import android.util.Log;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +13,6 @@ import floowuk.floow.services.mvp.ServicePresenter;
 import floowuk.floow.utils.JSONUtil;
 import android.support.v4.content.WakefulBroadcastReceiver;
 /*** Created by igorfrankiv on 27/01/2018.*/
-
 
 // Check from JSON OBJECT which is saved locally if it was reading recording during SHUTDOWN OR RESTARTED
 // If yes, it is going to restart the service
@@ -47,8 +41,9 @@ public class FloowServiceLocatorWakeUp  extends WakefulBroadcastReceiver {
                         context.startService(intent23);
                     }
                 }
-
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
             }
         }
     }

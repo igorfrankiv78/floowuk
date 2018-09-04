@@ -5,12 +5,25 @@ package floowuk.floow.services;
 //    by at least minDistance meters, AND at least minTime milliseconds have passed
 //    A kilometre has 1000 metres, and an hour has 3600 seconds, so a kilometre per hour is:
 //    1000 / 3600 = 0.277
-// requestLocationUpdates(String provider, long minTime, float minDistance, LocationListener listener)
-//Kilometer per Hour     Meters per Second
-//     20kph                  5.56m/s
-//     30kph                  8.33m/s
-//     40kph 		          11.11m/s
-//     50kph  		          13.89m/s
+//    requestLocationUpdates(String provider, long minTime, float minDistance, LocationListener listener)
+//    Kilometer per Hour     Meters per Second
+//        3kph                   0.83/s         3000 meters / 3600 seconds = 0.083m/s
+//        4kph                   1.11/s         4000 meters / 3600 seconds = 1.11m/s
+//        4.5kph                 1.25/s         4500 meters / 3600 seconds = 1.25m/s
+//        5kph                   1.38/s         5000 meters / 3600 seconds = 1.38m/s
+//        10kph                  2.78/s         10000 meters / 3600 seconds = 2.78m/s
+//        20kph                  5.56m/s        20000 meters / 3600 seconds = 5.555m/s
+//        30kph                  8.33m/s        30000 meters / 3600 seconds = 8.33m/s
+//        40kph 		        11.11m/s        40000 meters / 3600 seconds = 11.11m/s
+//        50kph  		        13.89m/s        50000 meters / 3600 seconds = 13.888m/s
+// Although walking speeds can vary greatly depending on many factors such as height, weight, age, terrain,
+// surface, load, culture, effort, and fitness, the average human walking speed is about 5.0 kilometres
+// per hour (km/h), or about 3.1 miles per hour (mph). Specific studies have found pedestrian walking speeds
+// ranging from 4.51 kilometres per hour (2.80 mph) to 4.75 kilometres per hour (2.95 mph) for older individuals
+// and from 5.32 kilometres per hour (3.31 mph) to 5.43 kilometres per hour (3.37 mph) for younger individuals;
+// [2][3] a brisk walking speed can be around 6.5 kilometres per hour (4.0 mph).
+// [4] Champion racewalkers can average more than 14 kilometres per hour (8.7 mph) over a distance of 20 kilometres
+// (12 mi).
 /*** Created by igorfrankiv on 26/01/2018.*/
     import java.text.SimpleDateFormat;
     import java.util.Date;
@@ -37,8 +50,8 @@ public class FloowServiceLocator extends Service implements IServiceView {
     public static final String DISTANCE = "distance";
     public static final String NOTIFICATION = "FLOOW_USER_LOCATION";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;// MINIMUM TIME IN MILISECONS 1000 = 1second
-    private static final float LOCATION_DISTANCE = 1f;// MINIMUM DISTANCE IN METERS
+    private static final int LOCATION_INTERVAL = 2000;// MINIMUM TIME IN MILISECONS 1000 = 1second
+    private static final float LOCATION_DISTANCE = 1.25f;// MINIMUM DISTANCE IN METERS
 
     private ServicePresenter mServicePresenter;
 

@@ -4,12 +4,15 @@ public final class UserLocation {
 
   private final double latitude;
   private final double longitude;
+  private final double distance;
+
   private final String time;
 
-    public UserLocation (double latitude, double longitude, String time){
+    public UserLocation (double latitude, double longitude, String time, double distance){
         this.latitude = latitude;
         this.longitude = longitude;
         this.time = time;
+        this.distance = distance;
     }
 
     public double getLatitude() {
@@ -21,4 +24,8 @@ public final class UserLocation {
     }
 
     public String getTime() {  return time; }
+
+    public double getDistance() {
+        return distance;
+    }
 }

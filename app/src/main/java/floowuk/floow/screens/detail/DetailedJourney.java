@@ -3,10 +3,12 @@ package floowuk.floow.screens.detail;
     import android.Manifest;
     import android.content.pm.PackageManager;
     import android.graphics.Color;
+    import android.location.Location;
     import android.os.Build;
     import android.os.Bundle;
     import android.support.v4.app.FragmentActivity;
     import android.support.v4.content.ContextCompat;
+    import android.util.Log;
     import android.view.View;
     import android.widget.Button;
     import android.widget.TextView;
@@ -22,7 +24,7 @@ package floowuk.floow.screens.detail;
     import floowuk.floow.model.UserLocations;
     import floowuk.floow.screens.detail.mvp.DetailPresenter;
     import floowuk.floow.screens.detail.mvp.IDetailView;
-    import floowuk.floow.screens.listofjourneys.adapters.MapsRecViewAdapter;
+    import floowuk.floow.screens.listofjourneys.viewadapt.MapsRecViewAdapter;
     import floowuk.floow.utils.TimeUtil;
     import flowigor.ie.floowuk.R;
     import java.util.ArrayList;
@@ -99,7 +101,41 @@ public class DetailedJourney extends FragmentActivity implements OnMapReadyCallb
             UserLocation userLocation = userLocations.getListOfUserLocations().get(userLocations.getListOfUserLocations().size() - 1);
             String dateStart = userLocations.getListOfUserLocations().get(0).getTime();
             String dateStop = userLocation.getTime();
+//--------------------------------------------------------------------------------------
+            for(int i = 0; i < userLocations.getListOfUserLocations().size(); i++){
+    Log.e("----------" , "-----Start-----");
+    Log.e("Latitude = : " , String.valueOf( userLocations.getListOfUserLocations().get(i).getLatitude() ));
+    Log.e("Longitude = : " , String.valueOf( userLocations.getListOfUserLocations().get(i).getLongitude() ));
+    Log.e("----------" , "-----End-----");
+            }
 
+            LatLng latLngA = new LatLng(userLocations.getListOfUserLocations().get(0).getLatitude(),
+                     userLocations.getListOfUserLocations().get(0).getLongitude() );
+            LatLng latLngB = new LatLng(userLocations.getListOfUserLocations().get(
+                        userLocations.getListOfUserLocations().size() - 1).getLatitude(),
+                    userLocations.getListOfUserLocations().get
+                            (userLocations.getListOfUserLocations().size() - 1).getLongitude());
+
+            Location locationA = new Location("point A");
+            locationA.setLatitude(latLngA.latitude);
+            locationA.setLongitude(latLngA.longitude);
+            Location locationB = new Location("point B");
+            locationB.setLatitude(latLngB.latitude);
+            locationB.setLongitude(latLngB.longitude);
+
+            double valueResult = locationA.distanceTo(locationB);
+
+            Log.e("dist-----" , String.valueOf( valueResult ));
+            // dateStart dateStop
+            String durationOfJourney = TimeUtil.durationOfJourney( dateStart,  dateStop);
+            Log.e("time-----" , String.valueOf( durationOfJourney ));
+
+//            String[] latlong =  "-34.8799074,174.7565664".split(",");
+//            double latitude = Double.parseDouble(latlong[0]);
+//            double longitude = Double.parseDouble(latlong[1]);
+//            02-12 00:07:47.133 16738-16738/flowigor.ie.floowuk E/dist-----: 217.34776306152344
+//            02-12 00:07:47.133 16738-16738/flowigor.ie.floowuk E/dist-----: 2m 10s
+//--------------------------------------------------------------------------------------
             tvStartAndFinishTimes.setText(STARTED +dateStart+FINISHED+ dateStop);
             tvDuration.setText(TimeUtil.durationOfJourney ( dateStart,  dateStop));
             LatLng latLng1 = new LatLng(mListOfUserLocationsIn.get(0).getLatitude(), mListOfUserLocationsIn.get(0).getLongitude());
@@ -130,7 +166,6 @@ public class DetailedJourney extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void showSuccefulMessage(String reason) {
         Toast.makeText(this, reason, Toast.LENGTH_LONG).show();
-
     }
 
 }

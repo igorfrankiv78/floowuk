@@ -11,8 +11,8 @@ public final class TimeUtil {
     public static final String durationOfJourney (String dateStart, String dateStop) {
 
         SimpleDateFormat format = new SimpleDateFormat(PATTERN);
-        Date d1 = null;
-        Date d2 = null;
+            Date d1 = null;
+            Date d2 = null;
 
         StringBuilder durrationOfJourney = new StringBuilder();
 

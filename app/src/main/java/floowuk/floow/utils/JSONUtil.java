@@ -23,6 +23,7 @@ public final class JSONUtil {
                 key.put("latitudes", s.getLatitude());
                 key.put("longitude", s.getLongitude());
                 key.put("time", s.getTime());
+                key.put("distance", s.getDistance());
                 arr.put(key);
             }
             JSONObject json = new JSONObject();
@@ -56,7 +57,8 @@ public final class JSONUtil {
                         listOfUserLocations.add(new UserLocation(
                                 listofuserlocationsObj.getDouble("latitudes"),
                                 listofuserlocationsObj.getDouble("longitude"),
-                                listofuserlocationsObj.getString("time")
+                                listofuserlocationsObj.getString("time"),
+                                listofuserlocationsObj.getDouble("distance")
                         ));
                     }
             }

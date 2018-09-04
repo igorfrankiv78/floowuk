@@ -1,4 +1,4 @@
-package floowuk.floow.screens.listofjourneys.adapters;
+package floowuk.floow.screens.listofjourneys.viewadapt;
 
     import android.content.Context;
     import android.content.Intent;

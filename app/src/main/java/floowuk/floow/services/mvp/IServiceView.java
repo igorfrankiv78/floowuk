@@ -4,5 +4,5 @@ package floowuk.floow.services.mvp;
 
 public interface IServiceView {
     void showError( String reason );
-    void readyDataForBroadcast( String  jsonListOfUserLocationsObj, String sizeOfList, String durrationOfJourney);
+    void readyDataForBroadcast( String  jsonListOfUserLocationsObj, String finalResultInMeters, String durrationOfJourney);
 }

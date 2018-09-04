@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import floowuk.floow.model.UserLocationsDB;
-import floowuk.floow.screens.listofjourneys.adapters.MapsRecViewAdapter;
+import floowuk.floow.screens.listofjourneys.viewadapt.MapsRecViewAdapter;
 import floowuk.floow.screens.listofjourneys.mvp.IListView;
 import floowuk.floow.screens.listofjourneys.mvp.ListPresenter;
 

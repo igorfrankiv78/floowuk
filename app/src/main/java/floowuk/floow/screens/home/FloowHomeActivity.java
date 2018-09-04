@@ -233,10 +233,9 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
             Date date1 = simpleDateFormat.parse(currentTime);
             Date date2 = simpleDateFormat.parse(mListOfUserLocations.get(0).getTime());
 
-            if (date1.compareTo(date2) > 0)
+            if (date1.compareTo(date2) > 0 && isAlreadyPopulated == false)
             {// take the whole array  currentTime = "01/31/2018 12:19:05"; serviceTime = "01/31/2018 12:19:04"
-                if(isAlreadyPopulated == false)
-                {
+                Log.e(" if = ",  "take the whole array");
                   isAlreadyPopulated = true;
                     LatLng latLng1 = new LatLng(mListOfUserLocations.get(0).getLatitude(), mListOfUserLocations.get(0).getLongitude());
 
@@ -244,21 +243,19 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(19));
 
                     if (currPolylineOptions == null)
-                        currPolylineOptions = new PolylineOptions().
-                                geodesic(true).
-                                color(Color.GREEN).
-                                width(5);
+                        currPolylineOptions = new PolylineOptions(). geodesic(true).color(Color.GREEN).width(5);
 
                     for (UserLocation s : mListOfUserLocations) {
                         LatLng latLng = new LatLng(s.getLatitude(), s.getLongitude());
                         currPolylineOptions.add(latLng);
                     }
                     mMap.addPolyline(currPolylineOptions);
-                }
+//                }
             }
-            else if (date1.compareTo(date2) < 0)
+            else
+//                if (date1.compareTo(date2) < 0)
             {// take one by one from array currentTime = "01/31/2018 12:19:05";  serviceTime = "01/31/2018 12:19:06";
-                System.out.println("currentTime is before serviceTime");
+                Log.e(" else if = ",  " take one by one from array ");
             UserLocation userLocation = mListOfUserLocations.get(mListOfUserLocations.size() - 1);
             // Place current location marker
             LatLng latLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
@@ -281,8 +278,12 @@ public class FloowHomeActivity extends FragmentActivity implements OnMapReadyCal
 
             currPolylineOptions.add(latLng);
             mMap.addPolyline(currPolylineOptions);
-
             }
+
+
+
+
+
         }
         } catch (ParseException e){
 

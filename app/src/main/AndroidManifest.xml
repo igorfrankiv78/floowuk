@@ -27,6 +27,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name="floowuk.floowrx.app.RxMvpApp"
         android:theme="@style/AppTheme">
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -39,9 +40,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyChB87evj88utEjS79o9oKNRArqWZh2UzI" />
-        <activity
-            android:name="floowuk.floow.screens.home.FloowHomeActivity"
+        <!--android:name="floowuk.floowrx.screens.home.FloowHomeActivity"-->
 
+        <activity
+            android:name="floowuk.zendeskigorlibrary.screens.ListOfTickets"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_maps">
             <intent-filter>
@@ -50,17 +52,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="floowuk.floow.screens.listofjourneys.ListOfJourneys"
+        <activity android:name="floowuk.floowrx.screens.listofjourneys.ListOfJourneys"
             android:screenOrientation="portrait"
             android:label="ListOfJourneys">
         </activity>
 
-        <activity android:name="floowuk.floow.screens.detail.DetailedJourney"
+        <activity android:name="floowuk.floowrx.screens.detail.DetailedJourney"
             android:screenOrientation="portrait"
             android:label="UserJourney">
         </activity>
 
-         <receiver android:name="floowuk.floow.services.FloowServiceLocatorWakeUp"
+         <receiver android:name="floowuk.floowrx.services.FloowServiceLocatorWakeUp"
                    android:enabled="true"
                    android:exported="false"
                    android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
@@ -70,7 +72,7 @@
                         </intent-filter>
          </receiver>
 
-        <service android:name="floowuk.floow.services.FloowServiceLocator"/>
+        <service android:name="floowuk.floowrx.services.FloowServiceLocator"/>
 
     </application>
 </manifest>
