@@ -41,8 +41,8 @@ public class Notes {
 //
 //        If there is at list one recording, it will enable the button which will lead the List view Activity of all journeys and then to Detail View Activity.
 //        Each has MVP to the DB Sqlite to bring and populate the require fields. I implemented
-//        the delete operation in the Detail View Activity. It is working. But I disable it. Because I needed to remove the item deleted from the recycle view.
-//        I know how. But I did not have time to implement. The same with RXJava and Dagger2. It takes time to implement this all sort of things. Also I know a lot of
+//        the delete operation in the Detail View Activity. It is working.
+//        Also I know a lot of
 //        android google map api, LocationListener and LocationManager.
 //        There are android.location.LocationListener, and the com.google.android.gms.location.LocationListener is using Google Play Services APIs
 //        I am using in this project
@@ -74,5 +74,5 @@ public class Notes {
 //        Whatever the outcome of this test, please give me the feed back what I did wrong and how to improve myself.
 //        At least the App is working and there is the fundamental skeleton.
 //        For I want to improve this project and my skills in this field of Android.
-//        Than you very much!
+//        Thank you very much!
 }

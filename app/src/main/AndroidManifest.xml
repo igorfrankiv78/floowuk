@@ -40,10 +40,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyChB87evj88utEjS79o9oKNRArqWZh2UzI" />
-        <!--android:name="floowuk.floowrx.screens.home.FloowHomeActivity"-->
 
         <activity
-            android:name="floowuk.zendeskigorlibrary.screens.ListOfTickets"
+        android:name="floowuk.floowrx.screens.home.FloowHomeActivity"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_maps">
             <intent-filter>
