@@ -48,13 +48,7 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
-//    sourceSets {
-//
-//        androidTest {
-//            java.srcDirs = ['androidTest/java']
-//        }
-//
-//    }
+
 }
 
 //Kapt works for both java and kotlin classes
